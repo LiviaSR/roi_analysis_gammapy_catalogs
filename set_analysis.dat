@@ -1,0 +1,6 @@
+source_name = 'LHAASO J1825-1326'
+pos_ra = 276.45 
+pos_dec = -13.45
+radius_roi = 1
+e_ref_min = None 
+e_ref_max = None

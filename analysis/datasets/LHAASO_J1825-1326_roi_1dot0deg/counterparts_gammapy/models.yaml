@@ -1,0 +1,310 @@
+components:
+-   name: HESS_J1826-130_gamma-cat_ecpl
+    type: SkyModel
+    datasets_names: 'HESS J1826-130: gamma-cat'
+    spectral:
+        type: ExpCutoffPowerLawSpectralModel
+        parameters:
+        -   name: index
+            value: 1.6100000143051147
+            error: 0.10999999940395355
+        -   name: amplitude
+            value: 8.619999787747024e-13
+            unit: cm-2 s-1 TeV-1
+            error: 7.300000312354324e-14
+        -   name: reference
+            value: 1.0
+            unit: TeV
+        -   name: lambda_
+            value: 0.08
+            unit: TeV-1
+            error: 0.025599999353289604
+        -   name: alpha
+            value: 1.0
+-   name: HESS_J1825-137_gamma-cat_ecpl
+    type: SkyModel
+    datasets_names: 'HESS J1825-137: gamma-cat'
+    spectral:
+        type: ExpCutoffPowerLawSpectralModel
+        parameters:
+        -   name: index
+            value: 2.259999990463257
+            error: 0.029999999329447746
+        -   name: amplitude
+            value: 2.100000034976901e-11
+            unit: cm-2 s-1 TeV-1
+            error: 4.999999980020986e-13
+        -   name: reference
+            value: 1.0
+            unit: TeV
+        -   name: lambda_
+            value: 0.040322581885632605
+            unit: TeV-1
+            error: 0.01170655619353056
+        -   name: alpha
+            value: 1.0
+-   name: HESS_J1825-137_hgps_ecpl
+    type: SkyModel
+    datasets_names: 'HESS J1825-137: hgps'
+    spectral:
+        type: ExpCutoffPowerLawSpectralModel
+        parameters:
+        -   name: index
+            value: 2.150993585586548
+            error: 0.06252627819776535
+        -   name: amplitude
+            value: 6.946258152007445e-11
+            unit: cm-2 s-1 TeV-1
+            error: 2.854722101069962e-12
+        -   name: reference
+            value: 0.650128960609436
+            unit: TeV
+        -   name: lambda_
+            value: 0.07367420196533203
+            unit: TeV-1
+            error: 0.02136995457112789
+        -   name: alpha
+            value: 1.0
+-   name: HESS_J1826-130_hgps_pl
+    type: SkyModel
+    datasets_names: 'HESS J1826-130: hgps'
+    spectral:
+        type: PowerLawSpectralModel
+        parameters:
+        -   name: index
+            value: 2.0365400314331055
+            error: 0.10174273699522018
+        -   name: amplitude
+            value: 2.727713888095451e-13
+            unit: cm-2 s-1 TeV-1
+            error: 3.777238057381914e-14
+        -   name: reference
+            value: 2.0558881759643555
+            unit: TeV
+-   name: 3FGL_J1823dot2-1339_lp
+    type: SkyModel
+    datasets_names: 3FGL J1823.2-1339
+    spectral:
+        type: LogParabolaSpectralModel
+        parameters:
+        -   name: amplitude
+            value: 5.309554445415143e-12
+            unit: cm-2 MeV-1 s-1
+            error: 3.7259827384908406e-13
+        -   name: reference
+            value: 1615.7825927734375
+            unit: MeV
+        -   name: alpha
+            value: 2.2214150428771973
+            error: 0.06155787408351898
+        -   name: beta
+            value: 0.16191257536411285
+            error: 0.03773864731192589
+-   name: 3FGL_J1824dot5-1351e_lp
+    type: SkyModel
+    datasets_names: 3FGL J1824.5-1351e
+    spectral:
+        type: LogParabolaSpectralModel
+        parameters:
+        -   name: amplitude
+            value: 4.6858411519457716e-14
+            unit: cm-2 MeV-1 s-1
+            error: 4.2266787366894345e-15
+        -   name: reference
+            value: 27387.224609375
+            unit: MeV
+        -   name: alpha
+            value: 1.6812231540679932
+            error: 0.07355698943138123
+        -   name: beta
+            value: 0.1827942281961441
+            error: 0.055063970386981964
+-   name: 3FGL_J1826dot1-1256_ecpl-3fgl
+    type: SkyModel
+    datasets_names: 3FGL J1826.1-1256
+    spectral:
+        type: ExpCutoffPowerLaw3FGLSpectralModel
+        parameters:
+        -   name: index
+            value: 1.7140920162200928
+            error: 0.03626822680234909
+        -   name: amplitude
+            value: 7.53574425083059e-11
+            unit: cm-2 MeV-1 s-1
+            error: 1.3675510376898181e-12
+        -   name: reference
+            value: 987.5895385742188
+            unit: MeV
+        -   name: ecut
+            value: 3107.7275390625
+            unit: MeV
+            error: 200.19325256347656
+-   name: 4FGL_J1823dot3-1340_lp
+    type: SkyModel
+    datasets_names: 4FGL J1823.3-1340
+    spectral:
+        type: LogParabolaSpectralModel
+        parameters:
+        -   name: amplitude
+            value: 2.0669976147358327e-12
+            unit: cm-2 MeV-1 s-1
+            error: 9.203321969537132e-14
+        -   name: reference
+            value: 2386.793212890625
+            unit: MeV
+        -   name: alpha
+            value: 2.3130133152008057
+            error: 0.05746585503220558
+        -   name: beta
+            value: 0.23432821035385132
+            error: 0.04156910628080368
+-   name: 4FGL_J1824dot1-1304_lp
+    type: SkyModel
+    datasets_names: 4FGL J1824.1-1304
+    spectral:
+        type: LogParabolaSpectralModel
+        parameters:
+        -   name: amplitude
+            value: 3.490439057576844e-12
+            unit: cm-2 MeV-1 s-1
+            error: 5.405034059213776e-13
+        -   name: reference
+            value: 1238.9852294921875
+            unit: MeV
+        -   name: alpha
+            value: 3.1924898624420166
+            error: 0.3226960599422455
+        -   name: beta
+            value: 0.8942342400550842
+            error: 0.21684564650058746
+-   name: 4FGL_J1824dot4-1350e_lp
+    type: SkyModel
+    datasets_names: 4FGL J1824.4-1350e
+    spectral:
+        type: LogParabolaSpectralModel
+        parameters:
+        -   name: amplitude
+            value: 1.4742180187102966e-13
+            unit: cm-2 MeV-1 s-1
+            error: 7.95244251716341e-15
+        -   name: reference
+            value: 11602.41796875
+            unit: MeV
+        -   name: alpha
+            value: 1.6851983070373535
+            error: 0.041749242693185806
+        -   name: beta
+            value: 0.046579759567976
+            error: 0.017297927290201187
+-   name: 4FGL_J1826dot1-1256_secpl-4fgl-dr3
+    type: SkyModel
+    datasets_names: 4FGL J1826.1-1256
+    spectral:
+        type: SuperExpCutoffPowerLaw4FGLDR3SpectralModel
+        parameters:
+        -   name: amplitude
+            value: 1.2156479815839116e-11
+            unit: cm-2 MeV-1 s-1
+            error: 1.9083879984095609e-13
+        -   name: reference
+            value: 2247.16015625
+            unit: MeV
+        -   name: expfactor
+            value: 0.6650678515434265
+            error: 0.03346662595868111
+        -   name: index_1
+            value: 2.4648594856262207
+            error: 0.02833629958331585
+        -   name: index_2
+            value: 0.6868239045143127
+            error: 0.10549841821193695
+-   name: 4FGL_J1828dot1-1312_lp
+    type: SkyModel
+    datasets_names: 4FGL J1828.1-1312
+    spectral:
+        type: LogParabolaSpectralModel
+        parameters:
+        -   name: amplitude
+            value: 5.272664358076107e-13
+            unit: cm-2 MeV-1 s-1
+            error: 8.26630769585647e-14
+        -   name: reference
+            value: 2197.682373046875
+            unit: MeV
+        -   name: alpha
+            value: 2.601473569869995
+            error: 0.31961536407470703
+        -   name: beta
+            value: 0.6203932166099548
+            error: 0.3013966977596283
+-   name: 2FHL_J1824dot5-1350e_pl-2
+    type: SkyModel
+    datasets_names: 2FHL J1824.5-1350e
+    spectral:
+        type: PowerLaw2SpectralModel
+        parameters:
+        -   name: amplitude
+            value: 7.15000003648214e-10
+            unit: cm-2 s-1
+            error: 6.459999896124557e-11
+        -   name: index
+            value: 1.8899999856948853
+            error: 0.10999999940395355
+        -   name: emin
+            value: 0.05
+            unit: TeV
+        -   name: emax
+            value: 2.0
+            unit: TeV
+-   name: 3FHL_J1823dot3-1339_pl
+    type: SkyModel
+    datasets_names: 3FHL J1823.3-1339
+    spectral:
+        type: PowerLawSpectralModel
+        parameters:
+        -   name: index
+            value: 3.8243725299835205
+            error: 0.46857592463493347
+        -   name: amplitude
+            value: 1.864923319938594e-11
+            unit: cm-2 GeV-1 s-1
+            error: 3.194594328653766e-12
+        -   name: reference
+            value: 13.913978576660156
+            unit: GeV
+-   name: 3FHL_J1824dot5-1351e_lp
+    type: SkyModel
+    datasets_names: 3FHL J1824.5-1351e
+    spectral:
+        type: LogParabolaSpectralModel
+        parameters:
+        -   name: amplitude
+            value: 2.2919730349735268e-11
+            unit: cm-2 GeV-1 s-1
+            error: 1.8504811398478704e-12
+        -   name: reference
+            value: 33.4053955078125
+            unit: GeV
+        -   name: alpha
+            value: 1.5273646116256714
+            error: 0.10330700874328613
+        -   name: beta
+            value: 0.16805604100227356
+            error: 0.05695989355444908
+-   name: 3FHL_J1826dot1-1256_pl
+    type: SkyModel
+    datasets_names: 3FHL J1826.1-1256
+    spectral:
+        type: PowerLawSpectralModel
+        parameters:
+        -   name: index
+            value: 4.330575942993164
+            error: 0.512998104095459
+        -   name: amplitude
+            value: 2.700525740528814e-11
+            unit: cm-2 GeV-1 s-1
+            error: 3.952433866305505e-12
+        -   name: reference
+            value: 13.178301811218262
+            unit: GeV
+covariance: models_covariance.dat

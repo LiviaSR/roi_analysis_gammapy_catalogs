@@ -1,0 +1,23 @@
+components:
+-   name: UfvRy037
+    type: SkyModel
+    spectral:
+        type: ExpCutoffPowerLawSpectralModel
+        parameters:
+        -   name: index
+            value: 0.8840848678197565
+            error: 0.04782990123609902
+        -   name: amplitude
+            value: 1.584824260814904e-13
+            unit: cm-2 s-1 TeV-1
+            error: 3.156069039214144e-14
+        -   name: reference
+            value: 10.0
+            unit: TeV
+        -   name: lambda_
+            value: 0.27887213708991626
+            unit: TeV-1
+            error: 0.03911477392328791
+        -   name: alpha
+            value: 1.0
+covariance: models_covariance.dat

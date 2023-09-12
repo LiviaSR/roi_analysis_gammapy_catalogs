@@ -1,0 +1,49 @@
+datasets:
+- name: 'HESS J1826-130: gamma-cat'
+  type: FluxPointsDataset
+  filename: HESS_J1826-130:_gamma-cat.fits
+- name: 'HESS J1825-137: gamma-cat'
+  type: FluxPointsDataset
+  filename: HESS_J1825-137:_gamma-cat.fits
+- name: 'HESS J1825-137: hgps'
+  type: FluxPointsDataset
+  filename: HESS_J1825-137:_hgps.fits
+- name: 'HESS J1826-130: hgps'
+  type: FluxPointsDataset
+  filename: HESS_J1826-130:_hgps.fits
+- name: 3FGL J1823.2-1339
+  type: FluxPointsDataset
+  filename: 3FGL_J1823.2-1339.fits
+- name: 3FGL J1824.5-1351e
+  type: FluxPointsDataset
+  filename: 3FGL_J1824.5-1351e.fits
+- name: 3FGL J1826.1-1256
+  type: FluxPointsDataset
+  filename: 3FGL_J1826.1-1256.fits
+- name: 4FGL J1823.3-1340
+  type: FluxPointsDataset
+  filename: 4FGL_J1823.3-1340.fits
+- name: 4FGL J1824.1-1304
+  type: FluxPointsDataset
+  filename: 4FGL_J1824.1-1304.fits
+- name: 4FGL J1824.4-1350e
+  type: FluxPointsDataset
+  filename: 4FGL_J1824.4-1350e.fits
+- name: 4FGL J1826.1-1256
+  type: FluxPointsDataset
+  filename: 4FGL_J1826.1-1256.fits
+- name: 4FGL J1828.1-1312
+  type: FluxPointsDataset
+  filename: 4FGL_J1828.1-1312.fits
+- name: 2FHL J1824.5-1350e
+  type: FluxPointsDataset
+  filename: 2FHL_J1824.5-1350e.fits
+- name: 3FHL J1823.3-1339
+  type: FluxPointsDataset
+  filename: 3FHL_J1823.3-1339.fits
+- name: 3FHL J1824.5-1351e
+  type: FluxPointsDataset
+  filename: 3FHL_J1824.5-1351e.fits
+- name: 3FHL J1826.1-1256
+  type: FluxPointsDataset
+  filename: 3FHL_J1826.1-1256.fits
