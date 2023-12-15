@@ -1,99 +1,92 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
-
 import os
 import sys
-import importlib
-path_my_modules = 'my_modules'
-module_path = os.path.abspath(f'{path_my_modules}/config')
-if module_path not in sys.path:
-    sys.path.append(module_path)
+import csv
+import pickle
 
-import cfg
-importlib.reload(cfg)
+from typing import List
+from pathlib import Path
 
-
-# In[ ]:
+import pandas as pd 
+import numpy as np
 
 
-module_path = os.path.abspath(f'{path_my_modules}/{cfg.dir_hawc_analysis}')
-if module_path not in sys.path:
-    print(sys.path.append(module_path))
-    sys.path.append(module_path)
+from astropy import units as u
+from astropy.coordinates import SkyCoord
 
-import hawc_analysis as hawc
-
-
-# In[ ]:
-
-
-module_path = os.path.abspath(f'{path_my_modules}/{cfg.dir_cta_simulation}')
-if module_path not in sys.path:
-    print(sys.path.append(module_path))
-    sys.path.append(module_path)
-
-import cta_simulation as cta
-
-
-# In[ ]:
-
-
+from gammapy.estimators import FluxPoints
+from gammapy.catalog import CATALOG_REGISTRY 
 from gammapy.modeling import Fit
-from gammapy.datasets import Datasets
-from gammapy.modeling.models import Models
+from gammapy.datasets import (
+    Datasets, 
+    FluxPointsDataset,
+)
+from gammapy.modeling.models import (
+    Models, 
+    SkyModel,
+)
 
-def fit_Datasets(datasets, sky_model):
-    model_name = sky_model.name
-    datasets = Datasets(datasets)
-    sky_model = sky_model.copy(name = model_name)
-        
+import my_modules.config.cfg as cfg
+import my_modules.cta_simulation.cta_simulation as cta
+
+from models.system import SpiderSystem
+
+
+def fit_datasets(datasets, sky_model):
+    sky_model = sky_model.copy(name=sky_model.name)
     datasets.models = sky_model
-    # print(datasets)
-    fitter = Fit()
-    result_fit = fitter.run(datasets=datasets)
-    print(result_fit.parameters.to_table())
-    print(result_fit.total_stat)
+
+    fit_result = Fit().run(datasets=datasets)
+
+    return sky_model, fit_result
+
+
+# Read a .csv file and creates a list with all systems
+def read_systems_file(filename: str) -> List[SpiderSystem]:
+    system_list = []
+    with open(filename, 'r') as file:
+        csv_reader = csv.reader(file, delimiter=";")
+        next(csv_reader)  # Skip header line
+        for row in csv_reader:
+            system_list.append(SpiderSystem(
+                source_name=row[0],
+                pos_ra=float(row[4]),
+                pos_dec=float(row[5]),
+            ))
+
+    return system_list
+
+# Create empty directories of each systems inside the
+#  <base_dir> directory. 
+def create_output_dir(base_dir, name):
+    output_dir = f"{base_dir}/{name}"
+    if not os.path.exists(output_dir):
+        os.mkdir(output_dir)
+        
+    return output_dir
+
+
+def set_source_info(system_data):
+    source_name = system_data.source_name
+    pos_ra = system_data.pos_ra*u.deg
+    pos_dec = system_data.pos_dec*u.deg
+
+#     if any([source_RA.unit !=  cfg.unit_deg, source_dec.unit !=  cfg.unit_deg]):
+#         raise Exception("Sorry, there is a error: celestial coordinates (RA, dec.) units is not in degrees") 
     
-#     models = Models(sky_model.copy(name= model_name)) 
-#     file_path = utl.get_path_models(region_of_interest)
-#     # To save only the models
-#     models.write(f"{file_path}/{model_name}.yaml", model_name)
-    region_of_interest = create_region_of_interest()
-
-    write_datasets_models(datasets, region_of_interest, model_name)
-    return sky_model
+    return  {
+        'name': source_name,
+        'position': SkyCoord(pos_ra, pos_dec) 
+    }
 
 
-# In[ ]:
 
-
-# // In your script file
-def getVarFromFile(filename):
-    import imp
-    f = open(filename)
-    global data
-    data = imp.load_source('data', filename, f)
-    f.close()
-    return data
-
-
-# In[ ]:
-
-
-def write_datasets_models(datasets,region_of_interest, directory_name, path_datasets = None):
-    
+def write_datasets_models(datasets,region_of_interest, directory_name, path_datasets = None):   
     if path_datasets == None:
         path_datasets = get_path_datasets(region_of_interest)        
     
     path_datasets, path_file = mkdir_sub_directory(str(path_datasets), directory_name)
     datasets.write(filename=f"{path_file}/datasets{cfg.format_yaml}", filename_models=f"{path_file}/models{cfg.format_yaml}", overwrite=True)
     return
-
-
-# In[ ]:
 
 
 def read_datasets_models(region_of_interest, directory_name, path_datasets = None):
@@ -103,19 +96,12 @@ def read_datasets_models(region_of_interest, directory_name, path_datasets = Non
     return Datasets.read(filename=f"{path_file}/datasets{cfg.format_yaml}", filename_models=f"{path_file}/models{cfg.format_yaml}")
 
 
-# In[ ]:
-
 
 def create_file_name(pulsar_info, irf_name, skymodel_name): 
     """
     """
     return f"{name_to_txt(pulsar_info['name'])}_irf_{irf_name}_{skymodel_name}"
 
-
-# In[ ]:
-
-
-from gammapy.catalog import CATALOG_REGISTRY 
 
 def load_catalogs_from_gammapy():
     """
@@ -175,135 +161,23 @@ def load_catalogs_from_gammapy():
 
     return source_catalogs
 
+def create_region_of_interest(
+        source_info=None, 
+        radius_roi=1, 
+        e_ref_min=None, 
+        e_ref_max=None
+    ):
+    radius_roi = radius_roi * u.deg
 
-# In[ ]:
-
-
-from astropy.coordinates import SkyCoord
-
-def set_source_info():
-    """
-    Sets the source info into a dictionary
-
-    Parameters
-    ----------
-    source_name : str
-        source name based on J2000 coordinates
-        
-    source_RA : float  
-        right ascension (in degrees) of the source position
-        
-    source_dec : float
-        declination (in degrees) of the source position
-         
-    Returns
-    -------
-    source_info : dict 
-        dictionary with the source info (name and position)
-    
-    Example
-    -------
-    >>> source_name = "LHAASO J1825-1326"  
-    >>> source_RA = 276.45* u.Unit("deg")  
-    >>> source_dec = -13.45* u.Unit("deg") 
-    >>> set_source_info(source_name, source_RA, source_dec)
-    {'name': 'LHAASO J1825-1326',
-    'position': <SkyCoord (ICRS): (ra, dec) in deg
-    (276.45, -13.45)>}
-    """
-    data = getVarFromFile("set_analysis.dat")
-    source_name = data.source_name
-    pos_ra = data.pos_ra*u.Unit(cfg.unit_deg)
-    pos_dec = data.pos_dec*u.Unit(cfg.unit_deg)
-
-#     if any([source_RA.unit !=  cfg.unit_deg, source_dec.unit !=  cfg.unit_deg]):
-#         raise Exception("Sorry, there is a error: celestial coordinates (RA, dec.) units is not in degrees") 
-    
-    return  {
-        'name': source_name,
-        'position': SkyCoord(pos_ra, pos_dec) 
+    region_of_interest = {
+        **source_info,
+        "radius_roi": radius_roi,
+        "e_ref_min": e_ref_min,
+        "e_ref_max": e_ref_max,
+        "roi_name": create_roi_name(source_info['name'], radius_roi, e_ref_min, e_ref_max),
     }
-
-
-# In[ ]:
-
-
-from astropy import units as u
-
-def create_region_of_interest():
-    """
-    Creates the region of interest
-    
-    Parameters
-    ----------
-    source_info : dict 
-        dictionary with the source info (name and position)
-        
-    radius_roi : float
-        the maximum angle (in degrees) of separation between the source and its counterpart
-         
-    Returns
-    -------
-    region_of_interest : dict 
-        dictionary with the region of interest info (source name, source position, angle of separation and roi name)
-    
-    Example
-    -------
-    >>> source_name = "LHAASO J1825-1326"  
-    >>> source_RA = 276.45  
-    >>> source_dec = -13.45 
-    >>> source_info = set_source_info(source_name, source_RA, source_dec)
-    >>> radius_roi = 1
-    >>> create_region_of_interest(source_info, radius_roi)
-    
-    {'name': 'LHAASO J1825-1326',
-     'position': <SkyCoord (ICRS): (ra, dec) in deg
-     (276.45, -13.45)>,
-     'radius_roi': <Quantity 1. deg>}
-     
-    """
-    source_info = set_source_info()
-
-    data = getVarFromFile("set_analysis.dat")
-    radius_roi = data.radius_roi*u.Unit(cfg.unit_deg)
-    e_ref_min = data.e_ref_min
-    e_ref_max = data.e_ref_max
-    
-    if radius_roi.unit !=  cfg.unit_deg:
-        raise Exception("Sorry, there is a error: radius_roi unit is not in degrees") 
-        
-    if e_ref_min is not None and e_ref_max is not None:
-        if e_ref_min.unit != e_ref_max.unit:
-            raise Exception(f"Sorry, there is a error: units is not iquals ({e_ref_min.unit} != {e_ref_max.unit})") 
-            
-        if e_ref_max.value <= e_ref_min.value:
-            raise Exception(f"There is a error: e_ref_max ({e_ref_max}) <= e_ref_min ({e_ref_min})") 
-            
-    region_of_interest = source_info.copy()
-    region_of_interest["radius_roi"] = radius_roi
-    region_of_interest["e_ref_min"] = e_ref_min
-    region_of_interest["e_ref_max"] = e_ref_max
-    region_of_interest["roi_name"] = create_roi_name(source_info['name'], radius_roi, e_ref_min, e_ref_max)
-    
-#     print("**************************************************", end = "\n\n")
-#     print(f"Region of interest:\n")
-#     print(f'Source name: {region_of_interest['name']}')
-#     print(f'Source position (ra, dec) in deg: {region_of_interest['position'].ra.deg, region_of_interest['position'].dec.deg}')
-#     print(f"Radius in deg: {radius_roi.value}")
-#     print(f"Energy ref min in deg: {radius_roi.value}")
-    
-#     print(f"Radius in deg: {radius_roi.value}", end = "\n\n**************************************************\n")
     
     return region_of_interest
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
 
 
 def create_roi_name(source_name, radius_roi, e_ref_min = None, e_ref_max = None): 
@@ -324,8 +198,6 @@ def create_roi_name(source_name, radius_roi, e_ref_min = None, e_ref_max = None)
     
     return(f"{source_name}{radius_name}{e_ref_min_name}{e_ref_max_name}") 
 
-
-# In[ ]:
 
 
 def create_data_frame_counterparts(region_of_interest):
@@ -361,21 +233,12 @@ def create_data_frame_counterparts(region_of_interest):
     return df
 
 
-# In[ ]:
-
-
 def get_dict_sources_gammapy(sources_gammapy, datasets_gammapy):
     dict_sources_gammapy = {}
     for index, (source, dataset) in enumerate(zip(sources_gammapy, datasets_gammapy)):
         dict_sources_gammapy[dataset.name] = {'position': source.position}
     return dict_sources_gammapy
 
-
-# In[ ]:
-
-
-from gammapy.modeling.models import Models
-from gammapy.datasets import Datasets
 
 def joint_datasets(datasets_gammapy, models_gammapy, datasets_outside_gammapy, models_outside_gammapy):
     datasets_roi = Datasets()
@@ -392,12 +255,7 @@ def joint_datasets(datasets_gammapy, models_gammapy, datasets_outside_gammapy, m
     return datasets_roi, models_roi
 
 
-# In[ ]:
-
-
-import pandas as pd 
-def get_dict_data_frame_roi(sources_gammapy, datasets_gammapy, datasets_roi, region_of_interest):
-    
+def get_dict_data_frame_roi(sources_gammapy, datasets_gammapy, datasets_roi, region_of_interest): 
     df_columns=[]
     df = pd.DataFrame()
     dict_sources_gammapy = get_dict_sources_gammapy(sources_gammapy, datasets_gammapy)
@@ -454,15 +312,6 @@ def get_dict_data_frame_roi(sources_gammapy, datasets_gammapy, datasets_roi, reg
     return dict_roi, df
 
 
-# In[ ]:
-
-
-from gammapy.datasets import FluxPointsDataset
-from astropy.coordinates import SkyCoord
-from astropy import units as u
-from gammapy.modeling.models import SkyModel, Models
-from gammapy.datasets import Datasets
-
 def get_flux_points_datasets(region_of_interest):
     '''
     Select a catalog subset (only sources within a region of interest)
@@ -484,60 +333,47 @@ def get_flux_points_datasets(region_of_interest):
     for catalog in catalogs_roi:
         cat_tag = catalog.tag
         for counterpart in catalog:
+            if counterpart.flux_points_table is None or counterpart.spectral_model() is None:
+                continue
             n_counterparts+=1   
             counterpart_name = counterpart.name            
-            try: 
-                counterpart_flux_points = counterpart.flux_points
-                n_flux_points+=1
-                counterpart_spectral_model = counterpart.spectral_model()
-                spectral_model_tag = counterpart_spectral_model.tag[0]
-                spectral_model_tag_short = counterpart_spectral_model.tag[1]
-        
-                if cat_tag != 'gamma-cat' and cat_tag != 'hgps':
-                    ds_name = f"{counterpart_name}"
-                else:
-                    ds_name = f"{counterpart_name}: {cat_tag}"
-                     
-                file_name = name_to_txt(ds_name)
+            counterpart_flux_points = counterpart.flux_points
+            n_flux_points+=1
+            counterpart_spectral_model = counterpart.spectral_model()
     
-                counterpart_model = SkyModel(
-                    name = f"{file_name}_{counterpart_spectral_model.tag[1]}",
-                    spectral_model = counterpart_spectral_model,
-                    datasets_names=ds_name
-                )
-                models_counterparts.append(counterpart_model)  # Add the counterpart_model to models()
-        
-                ds = FluxPointsDataset(
-                    models = counterpart_model,
-                    data = counterpart_flux_points, 
-                    name =  ds_name   
-                )
-                counterparts.append(counterpart)
-                datasets_counterparts.append(ds)
-                
-                table = ds.data.to_table(sed_type = cfg.sed_type_e2dnde, formatted = True)
+            if cat_tag != 'gamma-cat' and cat_tag != 'hgps':
+                ds_name = f"{counterpart_name}"
+            else:
+                ds_name = f"{counterpart_name}: {cat_tag}"
+                    
+            file_name = name_to_txt(ds_name)
 
-                # Writes the flux points table in the csv/fits format
-                write_tables_csv(table, path_file, file_name)
-                write_tables_fits(table, path_file, file_name)
+            counterpart_model = SkyModel(
+                name = f"{file_name}_{counterpart_spectral_model.tag[1]}",
+                spectral_model = counterpart_spectral_model,
+                datasets_names=ds_name
+            )
+            models_counterparts.append(counterpart_model)  # Add the counterpart_model to models()
+    
+            ds = FluxPointsDataset(
+                models = counterpart_model,
+                data = counterpart_flux_points, 
+                name =  ds_name   
+            )
+            counterparts.append(counterpart)
+            datasets_counterparts.append(ds)
+            
+            table = ds.data.to_table(sed_type = cfg.sed_type_e2dnde, formatted = True)
+
+            # Writes the flux points table in the csv/fits format
+            write_tables_csv(table, path_file, file_name)
+            write_tables_fits(table, path_file, file_name)
                 
-            except Exception as error:
-                # By this way we can know about the type of error occurring
-                print(f"The error is: ({counterpart_name}) {error}") 
                             
     print(f"Total number of counterparts: {n_counterparts}")
     print(f"Total number of flux points tables: {n_flux_points}")
     return counterparts, datasets_counterparts, models_counterparts
 
-
-# In[ ]:
-
-
-# from gammapy.datasets import FluxPointsDataset
-from astropy.coordinates import SkyCoord
-from astropy import units as u
-
-import pickle
 
 def get_catalogs_region_of_interest(source_catalogs, region_of_interest):
     """
@@ -584,19 +420,6 @@ def get_catalogs_region_of_interest(source_catalogs, region_of_interest):
 
     return catalogs_roi
 
-
-# In[ ]:
-
-
-import numpy as np
-# from astropy import units as u
-from astropy.table import Table
-from gammapy.estimators import FluxPoints
-from gammapy.utils.scripts import make_path
-
-
-from gammapy.datasets import FluxPointsDataset
-
 def cut_flux_points_in_energy(datasets_counterparts, region_of_interest):
     e_ref_min = region_of_interest["e_ref_min"]
     
@@ -640,19 +463,11 @@ def cut_flux_points_in_energy(datasets_counterparts, region_of_interest):
     return datasets_cut_fp
 
 
-# In[ ]:
-
-
-import pickle
-
-def pickling_catalog_roi(catalogs_roi, region_of_interest):        
-    
+def pickling_catalog_roi(catalogs_roi, region_of_interest):            
     # Creates the directory to save the list of catalogs roi  
 #     path_analysis, path_file = mkdir_sub_directory(cfg.dir_analysis, cfg.dir_catalogs_roi)
-    path_file = get_path_catalogs_roi()
-    
+    path_file = get_path_catalogs_roi() 
     file_name = f"catalog_{create_roi_name(region_of_interest['name'], region_of_interest['radius_roi'], region_of_interest['e_ref_min'])}"
-    
     path_os = os.path.abspath(
         os.path.join(
             f"{path_file}/{file_name}{cfg.format_dat}"
@@ -667,11 +482,6 @@ def pickling_catalog_roi(catalogs_roi, region_of_interest):
         
     return
 
-
-# In[ ]:
-
-
-import pickle
     
 def unpickling_catalog_roi(region_of_interest):        
     # Creates the directory to save the catalogs roi list  
@@ -682,29 +492,11 @@ def unpickling_catalog_roi(region_of_interest):
         os.path.join(
             f"{path_file}/{file_name}{cfg.format_dat}"
         )
-    )
-
-    if path_os not in sys.path:
-        sys.path.append(path_os)       
+    )  
 
     with open(path_os, "rb") as fp:  
         catalogs_roi = pickle.load(fp)
     return catalogs_roi
-
-
-# In[7]:
-
-
-
-
-
-# In[12]:
-
-
-
-
-
-# In[ ]:
 
 
 def get_path_analysis():
@@ -753,15 +545,6 @@ def get_path_flux_points(region_of_interest):
     return path_flux_points
 
 
-# In[ ]:
-
-
-from pathlib import Path
-
-
-# In[ ]:
-
-
 def mkdir_sub_directory(parent_directory = None, child_directory = None):
     '''Creates a directory: parent_directory/child_directory and returs the path 
     >>>mkdir_sub_directory(parent_directory, directory)
@@ -787,9 +570,6 @@ def mkdir_sub_directory(parent_directory = None, child_directory = None):
         return (path_parent, path_child)
 
 
-# In[ ]:
-
-
 def name_to_txt(name):
     '''Given a `string`, `find` and `replace` the space by "_" and . by "dot"
     >>> name_to_txt(n ame.)
@@ -798,40 +578,12 @@ def name_to_txt(name):
     return name.replace(" ", "_").replace(".", "dot").replace(":", "")
 
 
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
 def number_to_txt(num):
     '''Given a `number`, return a string
     >>> number_to_txt(num = 1.002222):
     1
     '''
     return ("%.2f" % num).rstrip('0').rstrip('.').replace(".", "dot")
-    
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-from gammapy.estimators import FluxPoints
 
 def ds_fp_from_table_fp(table, sky_model, source_name, sed_type = "e2dnde"):
     '''Returns the flux points dataset from the flux points table 
@@ -848,12 +600,6 @@ def ds_fp_from_table_fp(table, sky_model, source_name, sed_type = "e2dnde"):
         name   = ds_name
     )
     return ds_fp
-
-
-# In[ ]:
-
-
-import sys, os
 
 def write_tables_csv(table, path_file, file_name):
 # Writes the flux points table in the csv format
@@ -873,12 +619,6 @@ def write_tables_csv(table, path_file, file_name):
     )   
     return
 
-
-# In[ ]:
-
-
-import sys, os
-
 def write_tables_fits(table, path_file, file_name):
     # Writes the flux points table in the fits format
     path_os = os.path.abspath(
@@ -886,7 +626,6 @@ def write_tables_fits(table, path_file, file_name):
             f"{path_file}/{file_name}{cfg.format_fits}"
         )
     )      
-
     if path_os not in sys.path:
         sys.path.append(path_os)
 
@@ -896,21 +635,3 @@ def write_tables_fits(table, path_file, file_name):
         overwrite = True
     )   
     return
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-# module_path = os.path.abspath(f'{path_my_modules}/lhaaso')
-# if module_path not in sys.path:
-#     print(sys.path.append(module_path))
-#     sys.path.append(module_path)
-
-# import lhaaso
-

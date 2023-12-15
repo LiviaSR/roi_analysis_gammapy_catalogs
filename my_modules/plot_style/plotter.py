@@ -1,54 +1,14 @@
-#!/usr/bin/env python
-# coding: utf-8
+import re
 
-# In[ ]:
+import matplotlib.pyplot as plt
 
+from astropy import units as u
 
 from gammapy.modeling.models import Models
 from gammapy.datasets import Datasets
 
-
-# In[ ]:
-
-
-import os
-import sys
-import importlib
-path_my_modules = 'my_modules'
-module_path = os.path.abspath(f'{path_my_modules}/config')
-if module_path not in sys.path:
-    sys.path.append(module_path)
-
-import cfg
-importlib.reload(cfg)
-
-
-# In[4]:
-
-
-module_path = os.path.abspath(f'{path_my_modules}/{cfg.dir_utilities}')
-if module_path not in sys.path:
-    sys.path.append(module_path)
-
-import utilities as utl
-importlib.reload(utl)
-
-
-# In[ ]:
-
-
-def savefig(path_file, file_name):
-    ''' Saves figures (.pdf, .png  and .svg) in the path_child directoty    
-    savefig(path_child, child_name)
-    >>> plt.savefig(file, bbox_inches='tight')
-    '''
-    formats_file = [cfg.format_pdf, cfg.format_png, cfg.format_svg]
-    for format_file in formats_file: 
-        file = path_file / f'{file_name}{format_file}'
-        plt.savefig(file, bbox_inches='tight')
-
-
-# In[ ]:
+import my_modules.config.cfg as cfg
+import my_modules.utilities.utilities as utl
 
 
 def set_leg_style(dict_leg_style, datasets = None, models = None, color = None, marker = None, linestyle = None):
@@ -65,9 +25,6 @@ def set_leg_style(dict_leg_style, datasets = None, models = None, color = None, 
             dict_leg_style = set_leg_style_models(dict_leg_style, models, color, linestyle)
         
         return dict_leg_style
-
-
-# In[ ]:
 
 
 def set_leg_style_datasets(dict_leg_style, datasets, color = None, marker = None):
@@ -101,9 +58,6 @@ def set_leg_style_datasets(dict_leg_style, datasets, color = None, marker = None
     return dict_leg_style
 
 
-# In[ ]:
-
-
 def set_leg_style_models(dict_leg_style, models, color = None, linestyle = None):
     models = Models(models)
     color_m = color
@@ -125,12 +79,7 @@ def set_leg_style_models(dict_leg_style, models, color = None, linestyle = None)
     return dict_leg_style
 
 
-# In[ ]:
-
-
-import re
 def set_label_datasets(dataset_name):
-    
     test_string = dataset_name
     spl_word = ':'
     match = re.search(spl_word, test_string)
@@ -151,16 +100,10 @@ def set_label_datasets(dataset_name):
         label = f'{source_name} ({year})' 
     else:
         label = dataset_name
-
     return label
 
 
-# In[ ]:
-
-
-from astropy import units as u
 def plot_SED(
-    name = "region_of_interest", 
     datasets = None,  
     models = None,
     dict_leg_style = None, 
@@ -169,9 +112,9 @@ def plot_SED(
     dict_plot_axis =  dict(
     label =  (r'$\rm{E\ [TeV] }$', r'$\rm{E^2\ J(E)\ [TeV\ cm^{-2}\ s^{-1}] }$'),
     units =  (          'TeV',                       'TeV  cm-2     s-1')
-),
+    ),
     dict_plot_limits = dict(
-        energy_bounds = [1e-5, 3e2] * u.TeV,
+        energy_bounds = [1e-5, 3e2],
         ylim = [1e-23, 1e-7]
     ),
     dict_leg_place = dict(
@@ -180,9 +123,9 @@ def plot_SED(
         loc='lower left', 
     )
 ):    
-    
+    plt.figure()
     ax = plt.subplot()
-    
+
     ax.xaxis.set_units(u.Unit(dict_plot_axis['units'][0]))
     ax.yaxis.set_units(u.Unit(dict_plot_axis['units'][1]))
 
@@ -195,7 +138,7 @@ def plot_SED(
 #     while len(cfg.markers) < len(datasets) + 1:
 #          cfg.markers.extend( cfg.markers)
                         
-    for index, dataset in enumerate(datasets):
+    for dataset in datasets:
         color = dict_leg_style[dataset.name][0]
         marker = dict_leg_style[dataset.name][1]
         
@@ -210,20 +153,21 @@ def plot_SED(
                     **kwargs
                 )
     if models:
-        path_file =  utl.get_path_SED(region_of_interest)  
-        for index, model in enumerate(models):
-            linestyle = dict_leg_style[model.name][1]
-            color = dict_leg_style[model.name][0]
+        for model in models:
+            #linestyle = dict_leg_style[model.name][1]
+            #color = dict_leg_style[model.name][0]
+            linestyle = "solid"
+            color = "black"
             spectral_model = model.spectral_model
+            print(spectral_model)
             
 #             spectral_model.plot(label = f"{model.name} (fit)", energy_bounds=dict_plot_limits['energy_bounds'],   marker = ',', color="black", **kwargs)
-            energy_bounds = [7e-2, 8e2] * u.TeV
+            energy_bounds = [1e-4, 1e3] * u.TeV
 #             energy_bounds=dict_plot_limits['energy_bounds']
             spectral_model.plot(energy_bounds=energy_bounds,  linestyle = linestyle, marker = ',', color=color, **kwargs)
 
             spectral_model.plot_error(energy_bounds=energy_bounds,**kwargs)
-    else:
-        path_file =  utl.get_path_flux_points(region_of_interest)  
+
     ax.set_ylim(dict_plot_limits['ylim'])
     ax.set_xlim(dict_plot_limits['energy_bounds'])
     
@@ -232,22 +176,8 @@ def plot_SED(
     plt.xlabel(dict_plot_axis['label'][0])   
     plt.ylabel(dict_plot_axis['label'][1])
     
-    file_name = utl.name_to_txt(name)
-        
-    savefig(path_file, file_name)
-    
-#     plt.savefig(path_file, bbox_inches='tight')
-#     plt.grid(which="both")
-    plt.show()
-    
-    return
+    return plt
 
-
-# In[5]:
-
-
-from astropy import units as u
-import matplotlib.pyplot as plt # A collection of command style functions
 
 def SED_from_catalogs(
     counterparts, datasets_counterparts, models_counterparts, colors_dict, region_of_interest,
@@ -316,11 +246,6 @@ def SED_from_catalogs(
         plt.show()
       
 
-
-# In[ ]:
-
-
-from astropy import units as u
 def SED_flux_points(
     datasets = None,  
     spectral_model = None,

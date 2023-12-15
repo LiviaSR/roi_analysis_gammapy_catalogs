@@ -1,47 +1,15 @@
-#!/usr/bin/env python
-# coding: utf-8
+from pathlib import Path
 
-# In[ ]:
-
-
-import os
-import sys
-import importlib
-path_my_modules = "/home/born-again/Documents/GitHub/CTA_projects/my_modules"
-module_path = os.path.abspath(f'{path_my_modules}/config')
-if module_path not in sys.path:
-    sys.path.append(module_path)
-
-import cfg
-importlib.reload(cfg)
-
-
-# In[1]:
-
-
-import os
-import sys
-import importlib
-
-module_path = os.path.abspath(f'{path_my_modules}/{cfg.dir_spectral_models}')
-if module_path not in sys.path:
-    sys.path.append(module_path)
-
-import spectral_models as spec
-importlib.reload(spec)
-
-module_path = os.path.abspath(f'{path_my_modules}/{cfg.dir_utilities}')
-if module_path not in sys.path:
-    sys.path.append(module_path)
-
-import utilities as utl
-importlib.reload(utl)
-
-
-# In[4]:
-
-
+from astropy import units as u
+from astropy.table import Table
 from astropy.coordinates import SkyCoord
+
+from gammapy.modeling.models import SkyModel, Models
+from gammapy.datasets import Datasets
+
+import my_modules.config.cfg as cfg
+import my_modules.utilities.utilities as utl
+import my_modules.spectral_models.spectral_models as spec
 
 def get_dict():
     '''
@@ -52,67 +20,56 @@ obs: CU is the flux of the Crab Nebula at 100 TeV; 1 CU = 6.1 x 10-17 photons Te
 see https://www.nature.com/articles/s41586-021-03498-z
     '''
     CU = 6.1e-17 * u.Unit("TeV-1 cm-2 s-1")
-    unit_deg = cfg.unit_deg
-
     return {
     "LHAASO J0534+2202": {
-        "position": SkyCoord(83.55, 22.05, unit=unit_deg),
+        "position": SkyCoord(83.55, 22.05, unit="deg"),
         "flux":(1.00, 0.14)* CU
     },
     "LHAASO J1825-1326": {
-        "position": SkyCoord(276.45, -13.45, unit=unit_deg),
+        "position": SkyCoord(276.45, -13.45, unit="deg"),
         "flux": (3.57,0.52)* CU
     },    
     "LHAASO J1839-0545": {
-        "position": SkyCoord(279.95, -5.75, unit=unit_deg),
+        "position": SkyCoord(279.95, -5.75, unit="deg"),
         "flux": (0.70,0.18)* CU
     },    
     "LHAASO J1843-0338": {
-        "position": SkyCoord(280.75, -3.65, unit=unit_deg),
+        "position": SkyCoord(280.75, -3.65, unit="deg"),
         "flux": (0.73,0.17)* CU
     }, 
     "LHAASO J1849-0003": {
-        "position": SkyCoord(282.35, -0.05, unit=unit_deg),
+        "position": SkyCoord(282.35, -0.05, unit="deg"),
         "flux": (0.74,0.15)* CU
     }, 
     "LHAASO J1908+0621": {
-        "position": SkyCoord(287.05, 6.35, unit=unit_deg),
+        "position": SkyCoord(287.05, 6.35, unit="deg"),
         "flux": (1.36,0.18)* CU
     },
     "LHAASO J1929+1745": {
-        "position": SkyCoord(292.25, 17.75, unit=unit_deg),
+        "position": SkyCoord(292.25, 17.75, unit="deg"),
         "flux": (0.38,0.09)* CU
     },    
     "LHAASO J1956+2845": {
-        "position": SkyCoord(299.05, 28.75, unit=unit_deg),
+        "position": SkyCoord(299.05, 28.75, unit="deg"),
         "flux": (0.41,0.09)* CU
     },
     "LHAASO J2018+3651": {
-        "position": SkyCoord(304.75, 36.85, unit=unit_deg),
+        "position": SkyCoord(304.75, 36.85, unit="deg"),
         "flux": (0.50,0.10)* CU
     },
     "LHAASO J2032+4102": {
-        "position": SkyCoord(308.05, 41.05, unit=unit_deg),
+        "position": SkyCoord(308.05, 41.05, unit="deg"),
         "flux": (0.54,0.10)* CU
     },
     "LHAASO J2108+5157": {
-        "position": SkyCoord(317.15, 51.95, unit=unit_deg),
+        "position": SkyCoord(317.15, 51.95, unit="deg"),
         "flux": (0.38,0.09)* CU
     },
     "LHAASO J2226+6057": {
-        "position": SkyCoord(336.75, 60.95, unit=unit_deg),
+        "position": SkyCoord(336.75, 60.95, unit="deg"),
         "flux": (1.05,0.16)* CU
     }
 }
-
-
-# In[ ]:
-
-
-from gammapy.modeling.models import SkyModel, Models
-from gammapy.modeling.models import LogParabolaSpectralModel
-from pathlib import Path
-from gammapy.datasets import Datasets
     
 def get_dataset(source_name): 
     
@@ -155,17 +112,6 @@ def get_dataset(source_name):
     return utl.ds_fp_from_table_fp(table = table, sky_model = sky_model, source_name = source_name)
 
 
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-from astropy.table import Table
-from astropy import units as u
 def table_to_SED_format(path, file_name):
     '''
     Normalization Representation
@@ -194,6 +140,8 @@ def table_to_SED_format(path, file_name):
     #     table['e_max'].unit = u.TeV
     
     table['col2'] = table['col2']*u.erg.to("TeV")
+
+
     table.rename_column('col2', 'e2dnde')
     table['e2dnde'].unit = u.Unit("TeV cm-2 s-1")
     
@@ -216,14 +164,6 @@ def table_to_SED_format(path, file_name):
     
     return table
 
-
-# In[2]:
-
-
-from gammapy.modeling.models import SkyModel, Models
-from gammapy.modeling.models import LogParabolaSpectralModel
-from pathlib import Path
-from gammapy.datasets import Datasets
 
 def get_LHAASO_tables_datasets(dict_LHAASO):  
     # sky model LHAASO J1825-1326
@@ -282,16 +222,3 @@ def get_LHAASO_tables_datasets(dict_LHAASO):
         datasets.append(dataset)
         
     return tables, datasets, models
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-

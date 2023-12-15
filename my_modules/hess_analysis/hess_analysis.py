@@ -1,48 +1,9 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
-
-import os
-import sys
-import importlib
-path_my_modules = "/home/born-again/Documents/GitHub/CTA_projects/my_modules"
-module_path = os.path.abspath(f'{path_my_modules}/config')
-if module_path not in sys.path:
-    sys.path.append(module_path)
-
-import cfg
-importlib.reload(cfg)
-
-
-# In[1]:
-
-
-import os
-import sys
-import importlib
-
-module_path = os.path.abspath(f'{path_my_modules}/{cfg.dir_spectral_models}')
-if module_path not in sys.path:
-    sys.path.append(module_path)
-
-import spectral_models as spec
-importlib.reload(spec)
-
-module_path = os.path.abspath(f'{path_my_modules}/{cfg.dir_utilities}')
-if module_path not in sys.path:
-    sys.path.append(module_path)
-
-import utilities as utl
-importlib.reload(utl)
-
-
-# In[ ]:
-
-
 from gammapy.catalog import CATALOG_REGISTRY 
 from gammapy.modeling.models import SkyModel
+
+import my_modules.config.cfg as cfg
+import my_modules.utilities.utilities as utl
+import my_modules.spectral_models.spectral_models as spec
 
 def get_dataset_HESSJ1837069(counterparts, datasets_counterparts, models_counterparts, cat_tag = "gamma-cat"):
     source_name = "HESS J1837-069"

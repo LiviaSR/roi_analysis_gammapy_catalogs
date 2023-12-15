@@ -10,7 +10,7 @@ components:
             error: 0.10999999940395355
         -   name: amplitude
             value: 8.619999787747024e-13
-            unit: cm-2 s-1 TeV-1
+            unit: TeV-1 s-1 cm-2
             error: 7.300000312354324e-14
         -   name: reference
             value: 1.0
@@ -32,7 +32,7 @@ components:
             error: 0.029999999329447746
         -   name: amplitude
             value: 2.100000034976901e-11
-            unit: cm-2 s-1 TeV-1
+            unit: TeV-1 s-1 cm-2
             error: 4.999999980020986e-13
         -   name: reference
             value: 1.0
@@ -54,7 +54,7 @@ components:
             error: 0.06252627819776535
         -   name: amplitude
             value: 6.946258152007445e-11
-            unit: cm-2 s-1 TeV-1
+            unit: TeV-1 s-1 cm-2
             error: 2.854722101069962e-12
         -   name: reference
             value: 0.650128960609436
@@ -76,7 +76,7 @@ components:
             error: 0.10174273699522018
         -   name: amplitude
             value: 2.727713888095451e-13
-            unit: cm-2 s-1 TeV-1
+            unit: TeV-1 s-1 cm-2
             error: 3.777238057381914e-14
         -   name: reference
             value: 2.0558881759643555
@@ -89,7 +89,7 @@ components:
         parameters:
         -   name: amplitude
             value: 5.309554445415143e-12
-            unit: cm-2 MeV-1 s-1
+            unit: MeV-1 s-1 cm-2
             error: 3.7259827384908406e-13
         -   name: reference
             value: 1615.7825927734375
@@ -108,7 +108,7 @@ components:
         parameters:
         -   name: amplitude
             value: 4.6858411519457716e-14
-            unit: cm-2 MeV-1 s-1
+            unit: MeV-1 s-1 cm-2
             error: 4.2266787366894345e-15
         -   name: reference
             value: 27387.224609375
@@ -130,7 +130,7 @@ components:
             error: 0.03626822680234909
         -   name: amplitude
             value: 7.53574425083059e-11
-            unit: cm-2 MeV-1 s-1
+            unit: MeV-1 s-1 cm-2
             error: 1.3675510376898181e-12
         -   name: reference
             value: 987.5895385742188
@@ -147,7 +147,7 @@ components:
         parameters:
         -   name: amplitude
             value: 2.0669976147358327e-12
-            unit: cm-2 MeV-1 s-1
+            unit: MeV-1 s-1 cm-2
             error: 9.203321969537132e-14
         -   name: reference
             value: 2386.793212890625
@@ -166,7 +166,7 @@ components:
         parameters:
         -   name: amplitude
             value: 3.490439057576844e-12
-            unit: cm-2 MeV-1 s-1
+            unit: MeV-1 s-1 cm-2
             error: 5.405034059213776e-13
         -   name: reference
             value: 1238.9852294921875
@@ -185,7 +185,7 @@ components:
         parameters:
         -   name: amplitude
             value: 1.4742180187102966e-13
-            unit: cm-2 MeV-1 s-1
+            unit: MeV-1 s-1 cm-2
             error: 7.95244251716341e-15
         -   name: reference
             value: 11602.41796875
@@ -204,7 +204,7 @@ components:
         parameters:
         -   name: amplitude
             value: 1.2156479815839116e-11
-            unit: cm-2 MeV-1 s-1
+            unit: MeV-1 s-1 cm-2
             error: 1.9083879984095609e-13
         -   name: reference
             value: 2247.16015625
@@ -226,7 +226,7 @@ components:
         parameters:
         -   name: amplitude
             value: 5.272664358076107e-13
-            unit: cm-2 MeV-1 s-1
+            unit: MeV-1 s-1 cm-2
             error: 8.26630769585647e-14
         -   name: reference
             value: 2197.682373046875
@@ -245,7 +245,7 @@ components:
         parameters:
         -   name: amplitude
             value: 7.15000003648214e-10
-            unit: cm-2 s-1
+            unit: s-1 cm-2
             error: 6.459999896124557e-11
         -   name: index
             value: 1.8899999856948853
@@ -267,7 +267,7 @@ components:
             error: 0.46857592463493347
         -   name: amplitude
             value: 1.864923319938594e-11
-            unit: cm-2 GeV-1 s-1
+            unit: GeV-1 s-1 cm-2
             error: 3.194594328653766e-12
         -   name: reference
             value: 13.913978576660156
@@ -280,7 +280,7 @@ components:
         parameters:
         -   name: amplitude
             value: 2.2919730349735268e-11
-            unit: cm-2 GeV-1 s-1
+            unit: GeV-1 s-1 cm-2
             error: 1.8504811398478704e-12
         -   name: reference
             value: 33.4053955078125
@@ -302,7 +302,7 @@ components:
             error: 0.512998104095459
         -   name: amplitude
             value: 2.700525740528814e-11
-            unit: cm-2 GeV-1 s-1
+            unit: GeV-1 s-1 cm-2
             error: 3.952433866305505e-12
         -   name: reference
             value: 13.178301811218262
